@@ -22,12 +22,13 @@ jobs:
           source: "."
           target: "/home/ubuntu/url-shortener"
 
-      - name: Deploy on server
+- name: Deploy on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
+          command_timeout: 30m
           script: |
             cd /home/ubuntu/url-shortener
             docker-compose down
