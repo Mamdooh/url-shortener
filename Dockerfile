@@ -1,4 +1,4 @@
-FROM php:8.2-apache
+FROM php:8.0-apache
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
@@ -28,7 +28,7 @@ WORKDIR /var/www/html
 COPY . .
 
 # Install PHP dependencies
-RUN composer install --no-dev --optimize-autoloader
+RUN composer update --no-dev --optimize-autoloader
 
 # Install Node dependencies and build assets
 RUN npm install && npm run build
