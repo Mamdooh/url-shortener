@@ -22,7 +22,7 @@ jobs:
           source: "."
           target: "/home/ubuntu/url-shortener"
 
-       - name: Deploy on server
+      - name: Deploy on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
