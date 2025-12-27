@@ -39,7 +39,7 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 
 # Apache config for Laravel
 RUN sed -i 's|/var/www/html|/var/www/html/public|g' /etc/apache2/sites-available/000-default.conf
-
+# Apache config for Laravel
 EXPOSE 80
-
+# Apache config for Laravel
 CMD ["apache2-foreground"]
