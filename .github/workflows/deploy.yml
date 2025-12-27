@@ -1,14 +1,19 @@
-name: Deploy to AWS
+name: Deploy Code
 
 on:
   push:
     branches:
       - main
+    paths:
+      - 'app/**'
+      - 'resources/**'
+      - 'routes/**'
+      - 'config/**'
+      - 'public/**'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -22,34 +27,14 @@ jobs:
           source: "."
           target: "/home/ubuntu/url-shortener"
 
-      - name: Deploy on server
+      - name: Clear cache
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          command_timeout: 30m
-          envs: APP_KEY,APP_URL,DB_PASSWORD
           script: |
             cd /home/ubuntu/url-shortener
-            cat > .env << EOF
-            APP_KEY=$APP_KEY
-            APP_URL=$APP_URL
-            APP_ENV=production
-            APP_DEBUG=false
-            DB_CONNECTION=mysql
-            DB_HOST=db
-            DB_PORT=3306
-            DB_DATABASE=url_shortener
-            DB_USERNAME=root
-            DB_PASSWORD=$DB_PASSWORD
-            EOF
-            docker-compose down
-            docker-compose build
-            docker-compose up -d
-            sleep 30
-            docker-compose exec -T app php artisan migrate --force
-        env:
-          APP_KEY: ${{ secrets.APP_KEY }}
-          APP_URL: ${{ secrets.APP_URL }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+            docker-compose exec -T app php artisan config:clear
+            docker-compose exec -T app php artisan view:clear
+            docker-compose exec -T app php artisan cache:clear
