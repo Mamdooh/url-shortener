@@ -27,7 +27,7 @@ jobs:
           source: "."
           target: "/home/ubuntu/url-shortener"
 
-      - name: Clear cache
+      - name: Sync and clear cache
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -35,6 +35,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ubuntu/url-shortener
-            docker-compose exec -T app php artisan config:clear
+            docker cp resources/. url-shortener_app_1:/var/www/html/resources/
+            docker cp app/. url-shortener_app_1:/var/www/html/app/
+            docker cp routes/. url-shortener_app_1:/var/www/html/routes/
+            docker cp public/. url-shortener_app_1:/var/www/html/public/
             docker-compose exec -T app php artisan view:clear
             docker-compose exec -T app php artisan cache:clear
