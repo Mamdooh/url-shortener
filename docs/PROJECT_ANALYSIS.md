@@ -489,3 +489,4 @@ This URL shortener is a well-structured Laravel application with:
 
 The homepage (`/`) serves as the main entry point where users can shorten URLs, optionally with custom hashes and privacy settings. The form handles both authenticated and anonymous users, with links being associated with the logged-in user when available.
 
+
