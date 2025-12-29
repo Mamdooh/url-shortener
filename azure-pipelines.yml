@@ -9,6 +9,9 @@ trigger:
       - 'routes/**'
       - 'config/**'
       - 'public/**'
+      - 'Dockerfile'
+      - 'docker-compose.azure.yml'
+      - 'nginx.conf'
 
 pool: azure-vm-pool
 
@@ -16,12 +19,10 @@ steps:
   - script: |
       cd /home/azureuser/url-shortener
       git pull origin main
-      docker cp app/. url-shortener_app_1:/var/www/html/app/
-      docker cp resources/. url-shortener_app_1:/var/www/html/resources/
-      docker cp routes/. url-shortener_app_1:/var/www/html/routes/
-      docker cp config/. url-shortener_app_1:/var/www/html/config/
-      docker cp public/. url-shortener_app_1:/var/www/html/public/
-      docker exec url-shortener_app_1 php artisan view:clear
-      docker exec url-shortener_app_1 php artisan config:clear
-      docker exec url-shortener_app_1 php artisan cache:clear
-    displayName: 'Deploy code changes'
+      cat > .env << EOF
+      APP_KEY=base64:v9JqkGrOKfCxinQBvcU7O2fIhmKIbYSBg6XnE/na6OY=
+      DB_PASSWORD=Str0ngP@ss2024!
+      EOF
+      docker-compose -f docker-compose.azure.yml down
+      docker-compose -f docker-compose.azure.yml up -d --build
+    displayName: 'Deploy to Azure'
