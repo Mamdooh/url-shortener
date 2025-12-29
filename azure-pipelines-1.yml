@@ -25,15 +25,15 @@ steps:
       VERSION="1.0.${BUILD_NUM}-dev"
       
       cat > config/version.php << EOF
-      <?php
+<?php
 
-      return [
-          'version' => '${VERSION}',
-          'build' => '${BUILD_NUM}',
-          'commit' => '${SHORT_SHA}',
-          'environment' => 'dev',
-      ];
-      EOF
+return [
+    'version' => '${VERSION}',
+    'build' => '${BUILD_NUM}',
+    'commit' => '${SHORT_SHA}',
+    'environment' => 'dev',
+];
+EOF
       
       echo "Deploying version ${VERSION}"
       
@@ -42,7 +42,7 @@ steps:
       docker cp routes/. url-shortener_app-dev_1:/var/www/html/routes/
       docker cp config/. url-shortener_app-dev_1:/var/www/html/config/
       docker cp public/. url-shortener_app-dev_1:/var/www/html/public/
-      docker exec url-shortener_app-dev_1 php artisan config:clear
       docker exec url-shortener_app-dev_1 php artisan view:clear
+      docker exec url-shortener_app-dev_1 php artisan config:clear
       docker exec url-shortener_app-dev_1 php artisan cache:clear
     displayName: 'Deploy to Dev'
