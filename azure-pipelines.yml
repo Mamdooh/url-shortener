@@ -4,6 +4,11 @@ trigger:
       - main
   paths:
     include:
+      - 'app/**'
+      - 'resources/**'
+      - 'routes/**'
+      - 'config/**'
+      - 'public/**'
       - Dockerfile
       - docker-compose.yml
       - composer.json
