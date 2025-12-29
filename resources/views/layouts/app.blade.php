@@ -105,7 +105,7 @@
     </div>
 
     <footer style="text-align: center; padding: 20px; color: #6c757d; font-size: 13px; border-top: 1px solid #e9ecef; margin-top: 40px;">
-        @if(str_starts_with(request()->getHost(), 'az.'))
+        @if(str_starts_with(request()->getHost(), 'az.') || str_starts_with(request()->getHost(), 'dev.'))
             Powered By <strong>Azure</strong>
         @else
             Powered By <strong>AWS</strong>
