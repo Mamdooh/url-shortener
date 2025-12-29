@@ -17,6 +17,27 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate version
+        run: |
+          BUILD_NUM=$(git rev-list --count HEAD)
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          VERSION="1.0.${BUILD_NUM}"
+          
+          cat > config/version.php << EOF
+          <?php
+
+          return [
+              'version' => '${VERSION}',
+              'build' => '${BUILD_NUM}',
+              'commit' => '${SHORT_SHA}',
+              'environment' => 'production',
+          ];
+          EOF
+          
+          echo "Deploying version ${VERSION}"
 
       - name: Copy files to server
         uses: appleboy/scp-action@v0.1.7
@@ -35,9 +56,11 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             cd /home/ubuntu/url-shortener
+            docker cp config/. url-shortener_app_1:/var/www/html/config/
             docker cp resources/. url-shortener_app_1:/var/www/html/resources/
             docker cp app/. url-shortener_app_1:/var/www/html/app/
             docker cp routes/. url-shortener_app_1:/var/www/html/routes/
             docker cp public/. url-shortener_app_1:/var/www/html/public/
+            docker-compose exec -T app php artisan config:clear
             docker-compose exec -T app php artisan view:clear
             docker-compose exec -T app php artisan cache:clear
