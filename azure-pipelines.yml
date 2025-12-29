@@ -9,17 +9,12 @@ trigger:
       - composer.json
       - package.json
 
-pool:
-  vmImage: 'ubuntu-latest'
+pool: azure-vm-pool
 
 steps:
-  - task: SSH@0
+  - script: |
+      cd /home/azureuser/url-shortener
+      git pull origin main
+      docker-compose down
+      docker-compose up -d --build
     displayName: 'Deploy to Azure VM'
-    inputs:
-      sshEndpoint: 'azure-vm'
-      runOptions: 'inline'
-      inline: |
-        cd /home/azureuser/url-shortener
-        git pull origin main
-        docker-compose down
-        docker-compose up -d --build
