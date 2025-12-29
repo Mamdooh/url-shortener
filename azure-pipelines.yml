@@ -1,0 +1,25 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - Dockerfile
+      - docker-compose.yml
+      - composer.json
+      - package.json
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+  - task: SSH@0
+    displayName: 'Deploy to Azure VM'
+    inputs:
+      sshEndpoint: 'azure-vm'
+      runOptions: 'inline'
+      inline: |
+        cd /home/azureuser/url-shortener
+        git pull origin main
+        docker-compose down
+        docker-compose up -d --build
