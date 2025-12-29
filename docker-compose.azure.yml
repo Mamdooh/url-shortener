@@ -1,0 +1,101 @@
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app
+      - app-dev
+    restart: unless-stopped
+
+  app:
+    build: .
+    expose:
+      - "80"
+    environment:
+      - APP_KEY=${APP_KEY}
+      - APP_ENV=production
+      - APP_DEBUG=false
+      - APP_URL=https://az.mmdouh.dev
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=url_shortener
+      - DB_USERNAME=root
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  app-dev:
+    build: .
+    expose:
+      - "80"
+    environment:
+      - APP_KEY=${APP_KEY}
+      - APP_ENV=development
+      - APP_DEBUG=true
+      - APP_URL=https://dev.mmdouh.dev
+      - DB_CONNECTION=mysql
+      - DB_HOST=db-dev
+      - DB_PORT=3306
+      - DB_DATABASE=url_shortener_dev
+      - DB_USERNAME=root
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - db-dev
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=url_shortener
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: unless-stopped
+
+  db-dev:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=url_shortener_dev
+    volumes:
+      - db_data_dev:/var/lib/mysql
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:latest
+    expose:
+      - "3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    restart: unless-stopped
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    restart: unless-stopped
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    restart: unless-stopped
+
+volumes:
+  db_data:
+  db_data_dev:
+  prometheus_data:
+  grafana_data:
