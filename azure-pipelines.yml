@@ -9,10 +9,6 @@ trigger:
       - 'routes/**'
       - 'config/**'
       - 'public/**'
-      - Dockerfile
-      - docker-compose.yml
-      - composer.json
-      - package.json
 
 pool: azure-vm-pool
 
@@ -20,6 +16,12 @@ steps:
   - script: |
       cd /home/azureuser/url-shortener
       git pull origin main
-      docker-compose down
-      docker-compose up -d --build
-    displayName: 'Deploy to Azure VM'
+      docker cp app/. url-shortener_app_1:/var/www/html/app/
+      docker cp resources/. url-shortener_app_1:/var/www/html/resources/
+      docker cp routes/. url-shortener_app_1:/var/www/html/routes/
+      docker cp config/. url-shortener_app_1:/var/www/html/config/
+      docker cp public/. url-shortener_app_1:/var/www/html/public/
+      docker exec url-shortener_app_1 php artisan view:clear
+      docker exec url-shortener_app_1 php artisan config:clear
+      docker exec url-shortener_app_1 php artisan cache:clear
+    displayName: 'Deploy code changes'
