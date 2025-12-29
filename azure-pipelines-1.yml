@@ -1,0 +1,29 @@
+trigger:
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - 'app/**'
+      - 'resources/**'
+      - 'routes/**'
+      - 'config/**'
+      - 'public/**'
+
+pool: azure-vm-pool
+
+steps:
+  - script: |
+      cd /home/azureuser/url-shortener
+      git fetch origin dev
+      git checkout dev
+      git pull origin dev
+      docker cp app/. url-shortener_app-dev_1:/var/www/html/app/
+      docker cp resources/. url-shortener_app-dev_1:/var/www/html/resources/
+      docker cp routes/. url-shortener_app-dev_1:/var/www/html/routes/
+      docker cp config/. url-shortener_app-dev_1:/var/www/html/config/
+      docker cp public/. url-shortener_app-dev_1:/var/www/html/public/
+      docker exec url-shortener_app-dev_1 php artisan view:clear
+      docker exec url-shortener_app-dev_1 php artisan config:clear
+      docker exec url-shortener_app-dev_1 php artisan cache:clear
+    displayName: 'Deploy to Dev'
