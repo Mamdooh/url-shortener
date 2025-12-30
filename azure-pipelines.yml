@@ -9,16 +9,15 @@ trigger:
       - routes/**
       - config/**
       - public/**
-      - Dockerfile
-      - docker-compose.azure.yml
-      - nginx.conf
 
 pool: azure-vm-pool
 
 steps:
 - script: |
     cd /home/azureuser/url-shortener
-    git pull origin main
+    git fetch origin main
+    git checkout main
+    git reset --hard origin/main
     git fetch --tags
     LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0")
     MAJOR_MINOR=${LATEST_TAG#v}
@@ -33,8 +32,12 @@ steps:
     echo "    'environment' => 'production'," >> config/version.php
     echo "];" >> config/version.php
     echo "Deploying version ${VERSION}"
-    echo "APP_KEY=base64:v9JqkGrOKfCxinQBvcU7O2fIhmKIbYSBg6XnE/na6OY=" > .env
-    echo "DB_PASSWORD=Str0ngP@ss2024!" >> .env
-    docker-compose -f docker-compose.azure.yml down
-    docker-compose -f docker-compose.azure.yml up -d --build
+    docker cp app/. url-shortener_app_1:/var/www/html/app/
+    docker cp resources/. url-shortener_app_1:/var/www/html/resources/
+    docker cp routes/. url-shortener_app_1:/var/www/html/routes/
+    docker cp config/. url-shortener_app_1:/var/www/html/config/
+    docker cp public/. url-shortener_app_1:/var/www/html/public/
+    docker exec url-shortener_app_1 php artisan view:clear
+    docker exec url-shortener_app_1 php artisan config:clear
+    docker exec url-shortener_app_1 php artisan cache:clear
   displayName: Deploy to Azure
