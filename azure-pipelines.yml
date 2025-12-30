@@ -19,13 +19,16 @@ steps:
 - script: |
     cd /home/azureuser/url-shortener
     git pull origin main
-    BUILD_NUM=$(git rev-list --count HEAD)
+    git fetch --tags
+    LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v1.0")
+    MAJOR_MINOR=${LATEST_TAG#v}
+    PATCH=$(git rev-list ${LATEST_TAG}..HEAD --count 2>/dev/null || echo "0")
     SHORT_SHA=$(git rev-parse --short HEAD)
-    VERSION="1.0.${BUILD_NUM}"
+    VERSION="${MAJOR_MINOR}.${PATCH}"
     echo "<?php" > config/version.php
     echo "return [" >> config/version.php
     echo "    'version' => '${VERSION}'," >> config/version.php
-    echo "    'build' => '${BUILD_NUM}'," >> config/version.php
+    echo "    'build' => '${PATCH}'," >> config/version.php
     echo "    'commit' => '${SHORT_SHA}'," >> config/version.php
     echo "    'environment' => 'production'," >> config/version.php
     echo "];" >> config/version.php
