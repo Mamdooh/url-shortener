@@ -31,7 +31,7 @@
  
     @if(request()->getHost() === 'dev.mmdouh.dev')
         <div style="background-color: #ffc107; color: #000; text-align: center; padding: 8px 0; font-weight: 600; font-size: 14px;">
-             Development Environment | v{{ config('version.version', 'local') }} ({{ config('version.commit', 'dev') }})
+             (!) Development Environment | v{{ config('version.version', 'local') }} ({{ config('version.commit', 'dev') }})
         </div>
     @endif
 
@@ -39,7 +39,7 @@
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    Mmdouh URL Shortener 
+                    Mmdouh URL Shortener v{{ config('version.version', 'local') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
