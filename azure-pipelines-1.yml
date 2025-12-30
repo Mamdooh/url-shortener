@@ -19,21 +19,18 @@ steps:
       git checkout dev
       git pull origin dev
       
-      # Generate version file
       BUILD_NUM=$(git rev-list --count HEAD)
       SHORT_SHA=$(git rev-parse --short HEAD)
       VERSION="1.0.${BUILD_NUM}-dev"
       
-      cat > config/version.php << EOF
-<?php
-
-return [
-    'version' => '${VERSION}',
-    'build' => '${BUILD_NUM}',
-    'commit' => '${SHORT_SHA}',
-    'environment' => 'dev',
-];
-EOF
+      echo "<?php" > config/version.php
+      echo "" >> config/version.php
+      echo "return [" >> config/version.php
+      echo "    'version' => '${VERSION}'," >> config/version.php
+      echo "    'build' => '${BUILD_NUM}'," >> config/version.php
+      echo "    'commit' => '${SHORT_SHA}'," >> config/version.php
+      echo "    'environment' => 'dev'," >> config/version.php
+      echo "];" >> config/version.php
       
       echo "Deploying version ${VERSION}"
       
