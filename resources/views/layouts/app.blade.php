@@ -33,6 +33,7 @@
         <div style="background-color: #ffc107; color: #000; text-align: center; padding: 8px 0; font-weight: 600; font-size: 14px;">
             Development Environment || v{{ config('version.version', 'local') }} ({{ config('version.commit', 'dev') }})
         </div>
+        <!-- Bug fix should be 1.1.3 -->
     @endif
 
     <div id="app">
