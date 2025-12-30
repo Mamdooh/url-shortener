@@ -1,0 +1,45 @@
+trigger:
+  branches:
+    include:
+      - dev
+  paths:
+    include:
+      - 'app/**'
+      - 'resources/**'
+      - 'routes/**'
+      - 'config/**'
+      - 'public/**'
+
+pool: azure-vm-pool
+
+steps:
+  - script: |
+      cd /home/azureuser/url-shortener
+      git fetch origin dev
+      git checkout dev
+      git pull origin dev
+      
+      BUILD_NUM=$(git rev-list --count HEAD)
+      SHORT_SHA=$(git rev-parse --short HEAD)
+      VERSION="1.0.${BUILD_NUM}-dev"
+      
+      echo "<?php" > config/version.php
+      echo "" >> config/version.php
+      echo "return [" >> config/version.php
+      echo "    'version' => '${VERSION}'," >> config/version.php
+      echo "    'build' => '${BUILD_NUM}'," >> config/version.php
+      echo "    'commit' => '${SHORT_SHA}'," >> config/version.php
+      echo "    'environment' => 'dev'," >> config/version.php
+      echo "];" >> config/version.php
+      
+      echo "Deploying version ${VERSION}"
+      
+      docker cp app/. url-shortener_app-dev_1:/var/www/html/app/
+      docker cp resources/. url-shortener_app-dev_1:/var/www/html/resources/
+      docker cp routes/. url-shortener_app-dev_1:/var/www/html/routes/
+      docker cp config/. url-shortener_app-dev_1:/var/www/html/config/
+      docker cp public/. url-shortener_app-dev_1:/var/www/html/public/
+      docker exec url-shortener_app-dev_1 php artisan view:clear
+      docker exec url-shortener_app-dev_1 php artisan config:clear
+      docker exec url-shortener_app-dev_1 php artisan cache:clear
+    displayName: 'Deploy to Dev'

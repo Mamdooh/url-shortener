@@ -28,11 +28,18 @@
     @endif
 </head>
 <body>
+ 
+    @if(request()->getHost() === 'dev.mmdouh.dev')
+        <div style="background-color: #ffc107; color: #000; text-align: center; padding: 8px 0; font-weight: 600; font-size: 14px;">
+             (!) Development Environment | v{{ config('version.version', 'local') }} ({{ config('version.commit', 'dev') }})
+        </div>
+    @endif
+
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
                 <a class="navbar-brand" href="{{ url('/') }}">
-                    Mr Mazen Online app for URL Short on azure and AWS
+                    Mmdouh URL Shortener v{{ config('version.version', 'local') }} 
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -96,5 +103,13 @@
             @yield('content')
         </main>
     </div>
+
+    <footer style="text-align: center; padding: 20px; color: #6c757d; font-size: 13px; border-top: 1px solid #e9ecef; margin-top: 40px;">
+        @if(str_starts_with(request()->getHost(), 'az.') || str_starts_with(request()->getHost(), 'dev.'))
+            Powered By <strong>Azure</strong>
+        @else
+            Powered By <strong>AWS</strong>
+        @endif
+    </footer>
 </body>
 </html>
