@@ -14,7 +14,7 @@ pool: azure-vm-pool
 
 steps:
 - script: |
-    cd /home/azureuser/url-shortener
+    cd /home/azureuser/url-shortener-dev
     git fetch origin dev
     git checkout dev
     git reset --hard origin/dev
